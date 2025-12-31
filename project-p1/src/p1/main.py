@@ -19,10 +19,21 @@ def main() -> None:
     logger.info("ETL pipeline started")
 
     try:
+        # extranct_csv_file loaded once from the web, to save resources
+
+        # NEW
+        # new_meta = compute_meta(file_name) # note: this read the file
+        # meta = load_metadata(file_name) # note: this read the db
+        # validated_meta = compare_meta()
+
         df = read_csv_file()
         df = transform(df)
         load_csv_file(df)  # intermediate state (debug, evolution comparison, etc.)
         load_data(df)  # data for downstream processes
+
+        # NEW
+        # load_metadata(new_meta)
+
         logger.info("ETL pipeline finished successfully")
     except Exception:
         logger.exception("ETL pipeline failed")

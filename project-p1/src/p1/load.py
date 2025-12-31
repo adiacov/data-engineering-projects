@@ -36,7 +36,6 @@ def load_data(df: pd.DataFrame) -> None:
 
     with create_engine(db_url, echo=False).connect() as con:
         try:
-            table_name = "data_projects_p1"
             df.to_sql(
                 name="data_projects",
                 con=con,
