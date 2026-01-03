@@ -40,7 +40,7 @@ def main() -> None:
     # Here I've put already the raw data in '/data/raw' directory.
     # I don't make a new call on each pipeline run, to save resources.
     try:
-        engine = create_db_engine()
+        engine = create_db_engine(echo=False)  # use True for debug
 
         new_metadata = create_ingestion_medatada(RAW_DATA_FILE_PATH)
 
@@ -54,9 +54,9 @@ def main() -> None:
         if valid_metadata and need_replacement:
             raw_df = read_csv_file(RAW_DATA_FILE_PATH)
             df = transform(raw_df)
-            load_csv_file(CLEAN_DATA_FILE_PATH, df)
             load_data(df, engine)
             load_metadata(engine, new_metadata)
+            load_csv_file(CLEAN_DATA_FILE_PATH, df)
             logger.info("ETL pipeline finished successfully")
         elif valid_metadata and not need_replacement:
             logger.info(
