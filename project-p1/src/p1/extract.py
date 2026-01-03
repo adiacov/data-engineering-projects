@@ -7,19 +7,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-RAW_DATA_FILE = "dft-road-casualty-statistics-collision-2023.csv"
-BASE_PATH = Path(__file__).resolve().parents[2]
-RAW_DATA_FILE_PATH = BASE_PATH / "data" / "raw" / RAW_DATA_FILE
 
-
-def read_csv_file() -> pd.DataFrame:
+def read_csv_file(file_path: Path) -> pd.DataFrame:
     """Returns a dataset from a CSV file"""
     try:
-        df = pd.read_csv(RAW_DATA_FILE_PATH)
-        logger.info(f"Reading raw dataset CSV file: {RAW_DATA_FILE_PATH}")
+        df = pd.read_csv(file_path)
+        logger.info(f"Reading raw dataset CSV file: {file_path}")
         return df
     except FileNotFoundError as exc:
-        logger.error(f"File not found {RAW_DATA_FILE_PATH}")
+        logger.error(f"File not found {file_path}")
         raise
     except Exception as exc:
         logger.error(f"Could not create DataFrame, because of {exc}")

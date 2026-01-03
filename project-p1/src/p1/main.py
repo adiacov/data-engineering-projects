@@ -3,8 +3,17 @@
 from p1.extract import read_csv_file
 from p1.load import load_csv_file, load_data
 from p1.transform import transform
+from p1.db import create_db_engine
+from p1.metadata import (
+    create_ingestion_medatada,
+    create_metadata_table,
+    get_ingested_metadata,
+    load_metadata,
+    validate_metadata,
+)
 
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -16,25 +25,46 @@ def main() -> None:
     - Load the clean data info a CSV file
     - Load the data into a local SQLite DB
     """
+
+    BASE_PATH = Path(__file__).resolve().parents[2]
+
+    RAW_DATA_FILE = "dft-road-casualty-statistics-collision-2023.csv"
+    RAW_DATA_FILE_PATH = BASE_PATH / "data" / "raw" / RAW_DATA_FILE
+
+    CLEAN_DATA_FILE = "dft-road-casualty-statistics-collision-2023-clean.csv"
+    CLEAN_DATA_FILE_PATH = BASE_PATH / "data" / "processed" / CLEAN_DATA_FILE
+
     logger.info("ETL pipeline started")
 
+    # Note: In real project the extract step would do some kind of API call to get the raw data.
+    # Here I've put already the raw data in '/data/raw' directory.
+    # I don't make a new call on each pipeline run, to save resources.
     try:
-        # extranct_csv_file loaded once from the web, to save resources
+        engine = create_db_engine()
 
-        # NEW
-        # new_meta = compute_meta(file_name) # note: this read the file
-        # meta = load_metadata(file_name) # note: this read the db
-        # validated_meta = compare_meta()
+        new_metadata = create_ingestion_medatada(RAW_DATA_FILE_PATH)
 
-        df = read_csv_file()
-        df = transform(df)
-        load_csv_file(df)  # intermediate state (debug, evolution comparison, etc.)
-        load_data(df)  # data for downstream processes
+        # create new metadata table if not exists. ensures the next step won't fail because of missing table.
+        create_metadata_table(engine)
+        current_metadata = get_ingested_metadata(engine, RAW_DATA_FILE_PATH)
+        (valid_metadata, need_replacement) = validate_metadata(
+            new_metadata, current_metadata
+        )
 
-        # NEW
-        # load_metadata(new_meta)
-
-        logger.info("ETL pipeline finished successfully")
+        if valid_metadata and need_replacement:
+            raw_df = read_csv_file(RAW_DATA_FILE_PATH)
+            df = transform(raw_df)
+            load_csv_file(CLEAN_DATA_FILE_PATH, df)
+            load_data(df, engine)
+            load_metadata(engine, new_metadata)
+            logger.info("ETL pipeline finished successfully")
+        elif valid_metadata and not need_replacement:
+            logger.info(
+                f"Skip ETL pipeline. The dataset already exists {valid_metadata}"
+            )
+        else:
+            logger.error("Failed to validate ingestion metadata")
+            raise Exception("Invalid ingestion metadata")
     except Exception:
         logger.exception("ETL pipeline failed")
         raise

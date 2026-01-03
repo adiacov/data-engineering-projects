@@ -12,6 +12,53 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
+# Validate new versus existing metadata
+def validate_metadata(new_metadata: dict, current_metadata: dict) -> tuple[dict, bool]:
+    """Validates new metadata dictionary against current one.
+
+    :param new_metadata: The new metadata dictionary to validate
+    :param current_metadata: The existing metadata
+
+    Returns a tuple for medatata object and if file contents changed.
+    The first tuple element:
+        The `new_metadata` if `current_metadata` is empty.
+        An empty dictionary if `new_metadata` is empty or validation didn't pass.
+    The second tuple element:
+        Wheter the file contents changed or not (file_hash).
+        This may be used as a signal to run or not the pipeline after validation step.
+        Usually a valid metadata with unchaged file_hash means that the ingested file is the same.
+    """
+
+    logger.info("Validating ingestion metadata...")
+    result = (new_metadata, True)
+    if new_metadata:
+        if current_metadata:
+            result = _do_validate_metadata(new_metadata, current_metadata)
+
+    return result
+
+
+def _do_validate_metadata(new_metadata, current_metadata) -> tuple[dict, bool]:
+    if set(new_metadata.keys()).difference(current_metadata.keys()):
+        logger.warning("Metadata invalid, because of inconsistent keys")
+        return ({}, False)
+    elif new_metadata["dataset_name"] != current_metadata["dataset_name"]:
+        logger.warning("Metadata invalid, because of different dataset being compared")
+        return ({}, False)
+    elif datetime.fromisoformat(new_metadata["ingested_at"]) <= datetime.fromisoformat(
+        current_metadata["ingested_at"]
+    ):
+        logger.warning("Metadata invalid, because of ingestion date inconsistency")
+        return ({}, False)
+
+    if new_metadata["file_hash"] == current_metadata["file_hash"]:
+        logger.info("Metadata valid and unchanged.")
+        return (new_metadata, False)
+
+    logger.info("Metadata valid.")
+    return (new_metadata, True)
+
+
 # Create metadata from a source file
 def create_ingestion_medatada(file_path: Path) -> dict:
     """Create metadata info from a file"""
@@ -25,9 +72,7 @@ def create_ingestion_medatada(file_path: Path) -> dict:
             result = {
                 "dataset_name": file_name,
                 "file_hash": digest.hexdigest(),
-                "file_size_bytes": os.path.getsize(file_path),
-                # "ingested_at": str(datetime.now()),
-                "ingested_at": datetime.now(),
+                "ingested_at": str(datetime.now()),
             }
             logger.info(f"Successfully created metadata from file")
             return result
@@ -48,7 +93,6 @@ def create_metadata_table(engine: Engine) -> None:
         CREATE TABLE IF NOT EXISTS ingestion_metadata(
         dataset_name TEXT, 
         file_hash TEXT, 
-        file_size_bytes INTEGER, 
         ingested_at DATETIME
         )
         """
@@ -56,7 +100,7 @@ def create_metadata_table(engine: Engine) -> None:
 
     with engine.connect() as conn:
         try:
-            logger.info("Create table if not exists")
+            logger.info("Create table if not exists: ingestion_metadata")
             conn.execute(create_stmp)
             conn.commit()
         except Exception:
@@ -77,22 +121,21 @@ def get_ingested_metadata(engine: Engine, dataset_path: Path) -> dict:
         )
     )
 
+    result = {}
     with engine.connect() as conn:
         try:
-            result = conn.execute(
+            sql_result = conn.execute(
                 get_metadata_stms,
                 {"dataset_name": dataset_name},
             ).first()
 
-            if result:
-                return {
-                    "dataset_name": result.dataset_name,
-                    "file_hash": result.file_hash,
-                    "file_size_bytes": result.file_size_bytes,
-                    "ingested_at": str(result.ingested_at),
+            if sql_result:
+                result = {
+                    "dataset_name": sql_result.dataset_name,
+                    "file_hash": sql_result.file_hash,
+                    "ingested_at": str(sql_result.ingested_at),
                 }
-            else:
-                {}
+            return result
 
         except Exception:
             logger.error(
@@ -107,8 +150,8 @@ def load_metadata(engine: Engine, metadata: dict) -> None:
 
     insert_stmt = text(
         (
-            "INSERT INTO ingestion_metadata(dataset_name, file_hash, file_size_bytes, ingested_at) "
-            f"VALUES(:dataset_name, :file_hash, :file_size_bytes, :ingested_at)"
+            "INSERT INTO ingestion_metadata(dataset_name, file_hash, ingested_at) "
+            f"VALUES(:dataset_name, :file_hash, :ingested_at)"
         )
     )
 
