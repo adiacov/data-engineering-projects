@@ -238,3 +238,19 @@ Only attempt these **after** you pass:
 * Incremental loads
 * Partitioned storage
 * CLI arguments for ingestion
+
+## 10. How it works (high level)
+
+The following pipeline does the following:
+
+1. loads the dataset as a CSV file (NOTE: file already exists. Skip extraction to save resources)
+2. creates a metadata disctionary including `file_hash` from CSV file. This is needed to compaire a possible existing metadata info for a similar dataset. Later a decision is made if the new metadata is different, than the pipeline proceeds further, skip otherwise.
+3. get metadata for an already existing metadata (if first time, see below)
+4. validates new metadata versus current metadata. If this is the first time the pipeline runs, the new metadata is considered valid (nothing to compare with)
+5. creates a pandas dataframe from the CSV file
+6. transform the dataset (clean, remove duplicates, validates schema)
+7. loads dataset into database
+8. loads metadata into database
+9. loads the cleaned dataset into a different CSV file (this is done to have a clean dataset for later analysis, debugging,...)
+
+Note: at each important step the pipeline, and in case of any issue, the pipeline logs / raises the error
