@@ -27,13 +27,13 @@ def _data_quality_check(con: Connection, df_row_count: int) -> None:
     select_duplicates = text(
         (
             "SELECT collision_index, COUNT(*) AS collision_index_count "
-            "FROM data_projects "
+            "FROM collisions_raw "
             "GROUP BY collision_index "
             "HAVING COUNT(*) > 1;"
         )
     )
 
-    count_all = text("SELECT COUNT(*) AS db_rows_count FROM data_projects;")
+    count_all = text("SELECT COUNT(*) AS db_rows_count FROM collisions_raw;")
 
     try:
         sql_result = con.execute(select_duplicates)
@@ -65,7 +65,7 @@ def load_data(df: pd.DataFrame, engine: Engine) -> None:
     with engine.connect() as conn:
         try:
             df.to_sql(
-                name="data_projects",
+                name="collisions_raw",
                 con=conn,
                 if_exists="replace",
                 index=False,

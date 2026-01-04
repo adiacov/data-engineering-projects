@@ -3,14 +3,14 @@
 import pandas as pd
 import pandera.pandas as pa
 
-from ingest.schema import OutputSchema
+from ingest.schema import CollisionsRawSchema
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 @pa.check_output(
-    schema=OutputSchema.to_schema(),
+    schema=CollisionsRawSchema.to_schema(),
     lazy=True,
 )
 def transform(df: pd.DataFrame) -> pd.DataFrame:
@@ -45,8 +45,9 @@ def _transform(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("- Removed rows containing null values")
 
     # Drop duplicate rows
-    df = df.drop_duplicates()
-    logger.info("- Removed duplicate rows")
+    duplicate_columns = ["collision_index"]
+    df = df.drop_duplicates(duplicate_columns)
+    logger.info(f"- Removed duplicate rows by columns: {duplicate_columns}")
 
     # Drop unnecessary columns
     drop_columns = ["date", "time"]

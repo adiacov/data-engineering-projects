@@ -2,7 +2,7 @@ import pandera.pandas as pa
 from datetime import datetime
 
 
-class OutputSchema(pa.DataFrameModel):
+class CollisionsRawSchema(pa.DataFrameModel):
     collision_index: str = pa.Field()
     collision_year: int = pa.Field()
     collision_ref_no: str = pa.Field()
