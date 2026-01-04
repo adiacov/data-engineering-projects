@@ -3,7 +3,7 @@
 import pandas as pd
 import pandera.pandas as pa
 
-from p1.schema import OutputSchema
+from ingest.schema import OutputSchema
 import logging
 
 logger = logging.getLogger(__name__)

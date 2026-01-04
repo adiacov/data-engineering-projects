@@ -17,7 +17,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-def main() -> None:
+def main_p1() -> None:
     """ETL pipeline
     - Read a local CSV file
     - Transform, Validate the data
@@ -25,7 +25,7 @@ def main() -> None:
     - Load the data into a local SQLite DB
     """
 
-    BASE_PATH = Path(__file__).resolve().parents[2]
+    BASE_PATH = Path(__file__).resolve().parents[1]
 
     RAW_DATA_FILE = "dft-road-casualty-statistics-collision-2023.csv"
     RAW_DATA_FILE_PATH = BASE_PATH / "data" / "raw" / RAW_DATA_FILE
@@ -68,4 +68,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main_p1()

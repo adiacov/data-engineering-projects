@@ -4,7 +4,6 @@ from sqlalchemy import Engine, text
 
 import logging
 from pathlib import Path
-import os
 import hashlib
 from datetime import datetime
 
