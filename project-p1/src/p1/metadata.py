@@ -19,14 +19,14 @@ def validate_metadata(new_metadata: dict, current_metadata: dict) -> tuple[dict,
     :param new_metadata: The new metadata dictionary to validate
     :param current_metadata: The existing metadata
 
-    Returns a tuple for medatata object and if file contents changed.
+    Returns a tuple for metadata object and if file contents changed.
     The first tuple element:
         The `new_metadata` if `current_metadata` is empty.
         An empty dictionary if `new_metadata` is empty or validation didn't pass.
     The second tuple element:
-        Wheter the file contents changed or not (file_hash).
+        Whether the file contents changed or not (file_hash).
         This may be used as a signal to run or not the pipeline after validation step.
-        Usually a valid metadata with unchaged file_hash means that the ingested file is the same.
+        Usually a valid metadata with unchanged file_hash means that the ingested file is the same.
     """
 
     logger.info("Validating ingestion metadata...")
@@ -60,7 +60,7 @@ def _do_validate_metadata(new_metadata, current_metadata) -> tuple[dict, bool]:
 
 
 # Create metadata from a source file
-def create_ingestion_medatada(file_path: Path) -> dict:
+def create_ingestion_metadata(file_path: Path) -> dict:
     """Create metadata info from a file"""
 
     file_name = file_path.name
@@ -84,35 +84,12 @@ def create_ingestion_medatada(file_path: Path) -> dict:
             raise
 
 
-# Create metadata table
-def create_metadata_table(engine: Engine) -> None:
-    """Creates a database table for metadata information"""
-
-    create_stmp = text(
-        """
-        CREATE TABLE IF NOT EXISTS ingestion_metadata(
-        dataset_name TEXT, 
-        file_hash TEXT, 
-        ingested_at DATETIME
-        )
-        """
-    )
-
-    with engine.connect() as conn:
-        try:
-            logger.info("Create table if not exists: ingestion_metadata")
-            conn.execute(create_stmp)
-            conn.commit()
-        except Exception:
-            logger.error("Could not create table ingestion_metadata")
-
-
 # Get existing ingestion metadata from database
 def get_ingested_metadata(engine: Engine, dataset_path: Path) -> dict:
     """Returns ingestion dataset info for a given dataset"""
 
     dataset_name = dataset_path.name
-    get_metadata_stms = text(
+    get_metadata_stmt = text(
         (
             "SELECT * FROM ingestion_metadata "
             "WHERE dataset_name = :dataset_name "
@@ -125,7 +102,7 @@ def get_ingested_metadata(engine: Engine, dataset_path: Path) -> dict:
     with engine.connect() as conn:
         try:
             sql_result = conn.execute(
-                get_metadata_stms,
+                get_metadata_stmt,
                 {"dataset_name": dataset_name},
             ).first()
 

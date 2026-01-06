@@ -21,7 +21,7 @@ def load_csv_file(file_path: Path, df: pd.DataFrame) -> None:
 
 
 def _data_quality_check(con: Connection, df_row_count: int) -> None:
-    """Validates the inseted database rows versus dataset rows"""
+    """Validates the inserted database rows versus dataset rows"""
 
     logger.info("Performing data quality check...")
     select_duplicates = text(

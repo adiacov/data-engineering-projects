@@ -14,9 +14,13 @@ logger = logging.getLogger(__name__)
     lazy=True,
 )
 def transform(df: pd.DataFrame) -> pd.DataFrame:
+    """Returns a transformed and validated dataset"""
+    logger.info("Starting dataset transformation...")
+
     try:
         transformed_df = _transform(df)
-        logger.info("Successfully transformed and validated the dataset")
+        logger.info("Finished dataset transformation")
+        logger.info("Successfully validated the dataset")
         return transformed_df
     except Exception:
         logger.error("Could not transform the dataset")
@@ -25,8 +29,6 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
 
 def _transform(df: pd.DataFrame) -> pd.DataFrame:
     """Transform dataset"""
-
-    logger.info("Starting dataset transformation...")
 
     # Convert date type from string to datetime
     if {"date", "time"}.issubset(df.columns):
@@ -49,7 +51,6 @@ def _transform(df: pd.DataFrame) -> pd.DataFrame:
     # Drop unnecessary columns
     drop_columns = ["date", "time"]
     df = df.drop(drop_columns, axis=1)
-    logger.info(f"- Removed unneccessairy columns: {drop_columns}")
+    logger.info(f"- Removed unnecessary columns: {drop_columns}")
 
-    logger.info("Finished dataset transfromation")
     return df

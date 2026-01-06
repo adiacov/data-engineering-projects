@@ -1,12 +1,11 @@
 """ETL pipeline - local file batch ingestion"""
 
-from p1.extract import read_csv_file
-from p1.load import load_csv_file, load_data
-from p1.transform import transform
-from p1.db import create_db_engine
-from p1.metadata import (
-    create_ingestion_medatada,
-    create_metadata_table,
+from ingest.extract import read_csv_file
+from ingest.load import load_csv_file, load_data
+from ingest.transform import transform
+from ingest.db import create_db_engine
+from ingest.metadata import (
+    create_ingestion_metadata,
     get_ingested_metadata,
     load_metadata,
     validate_metadata,
@@ -42,10 +41,8 @@ def main() -> None:
     try:
         engine = create_db_engine(echo=False)  # use True for debug
 
-        new_metadata = create_ingestion_medatada(RAW_DATA_FILE_PATH)
+        new_metadata = create_ingestion_metadata(RAW_DATA_FILE_PATH)
 
-        # create new metadata table if not exists. ensures the next step won't fail because of missing table.
-        create_metadata_table(engine)
         current_metadata = get_ingested_metadata(engine, RAW_DATA_FILE_PATH)
         (valid_metadata, need_replacement) = validate_metadata(
             new_metadata, current_metadata
