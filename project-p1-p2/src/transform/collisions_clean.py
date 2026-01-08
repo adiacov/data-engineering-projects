@@ -23,7 +23,7 @@ def _rename_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a new dataset with renamed columns"""
     logger.info("- Start rename dataset columns...")
 
-    dff = (
+    df = (
         df.rename(columns=str.strip)
         .rename(columns=str.lower)
         .rename(columns={"collision_index": "collision_id"})
@@ -31,27 +31,27 @@ def _rename_columns(df: pd.DataFrame) -> pd.DataFrame:
 
     logger.info("- Finish renaming dataset columns")
     logger.info(
-        f"[METRIC] Rename dataset columns: IN shape {df.shape} - OUT shape {dff.shape}"
+        f"[METRIC] Rename dataset columns: IN shape {df.shape} - OUT shape {df.shape}"
     )
-    return dff
+    return df
 
 
 def _cast_values(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a new dataset with cast data types"""
     logger.info("- Start cast dataset values")
 
-    dff = df
+    df = df.copy()
     # cast values: object to string
-    obj_cols = dff.select_dtypes(include="object").columns
-    dff[obj_cols] = dff[obj_cols].astype("string")
+    obj_cols = df.select_dtypes(include="object").columns
+    df[obj_cols] = df[obj_cols].astype("string")
 
     # cast values: int64 to int32
-    int_cols = dff.select_dtypes(include="int64").columns
-    dff[int_cols] = dff[int_cols].astype("int32")
+    int_cols = df.select_dtypes(include="int64").columns
+    df[int_cols] = df[int_cols].astype("int32")
 
     # cast values: float64 to float 32
-    float_cols = dff.select_dtypes(include="float64").columns
-    dff[float_cols] = dff[float_cols].astype("float32")
+    float_cols = df.select_dtypes(include="float64").columns
+    df[float_cols] = df[float_cols].astype("float32")
 
     logger.info("- Finish cast dataset columns")
     logger.info(
@@ -64,17 +64,17 @@ def _cast_values(df: pd.DataFrame) -> pd.DataFrame:
         f"[METRIC] Cast values data types -  float64 to float32: {float_cols.to_list()}"
     )
     logger.info(
-        f"[METRIC] Cast dataset values: IN shape {df.shape} - OUT shape {dff.shape}"
+        f"[METRIC] Cast dataset values: IN shape {df.shape} - OUT shape {df.shape}"
     )
-    return dff
+    return df
 
 
 # Handle columns mapping
 def _normalize_column_codes(df: pd.DataFrame) -> pd.DataFrame:
     """Normalize categorical code columns using predefined value mappings,
     failing on unmapped values."""
-    df = df.copy()
 
+    df = df.copy()
     for col, mapping in get_mappings().items():
         if col not in df.columns:
             logger.warning(f"Trying to transform non-existing column: {col}")
@@ -121,39 +121,38 @@ def _normalize_values(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("- Start normalize dataset values")
 
     # Map categorical values
-    ddf = _normalize_column_codes(df)
+    df = _normalize_column_codes(df)
 
     # Map categorical values special cases
-    # TODO: for these special cases, I need to double check for nan
-    ddf["first_road_number"] = _normalize_int_special_codes(
-        ddf["first_road_number"], {-1: "Unknown", 0: "Unclassified"}
+    df["first_road_number"] = _normalize_int_special_codes(
+        df["first_road_number"], {-1: "Unknown", 0: "Unclassified"}
     )
-    ddf["speed_limit"] = _normalize_int_special_codes(
-        ddf["speed_limit"], {-1: "Unknown", 99: "Unknown"}
+    df["speed_limit"] = _normalize_int_special_codes(
+        df["speed_limit"], {-1: "Unknown", 99: "Unknown"}
     )
-    ddf["second_road_number"] = _normalize_int_special_codes(
-        ddf["second_road_number"], {-1: "Unknown", 0: "Unclassified"}
+    df["second_road_number"] = _normalize_int_special_codes(
+        df["second_road_number"], {-1: "Unknown", 0: "Unclassified"}
     )
 
     # Strip whitespace in column values
-    str_cols = ddf.select_dtypes(include="string").columns
-    ddf[str_cols] = ddf[str_cols].apply(lambda s: s.str.strip())
+    str_cols = df.select_dtypes(include="string").columns
+    df[str_cols] = df[str_cols].apply(lambda s: s.str.strip())
 
     logger.info("- Finish normalize dataset values")
     logger.info(
-        f"[METRIC] Normalize dataset values: IN shape {df.shape} - OUT shape {ddf.shape}"
+        f"[METRIC] Normalize dataset values: IN shape {df.shape} - OUT shape {df.shape}"
     )
-    return ddf
+    return df
 
 
-def collisions_clean(df: pd.DataFrame) -> pd.DataFrame:
+def clean(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a cleaned dataset by applying transformations and verification rules"""
     logger.info("Start cleaning dataset...")
 
-    dff = df.copy()
-    dff = _rename_columns(dff)
-    dff = _normalize_values(dff)
-    dff = _cast_values(dff)
+    df = df.copy()
+    df = _rename_columns(df)
+    df = _normalize_values(df)
+    df = _cast_values(df)
 
     logger.info("Successfully cleaned dataset")
-    return dff
+    return df
