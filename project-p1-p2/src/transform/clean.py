@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from transform.column_mappings import get_mappings
+from transform.code_mappings import get_mappings
 
 import logging
 
