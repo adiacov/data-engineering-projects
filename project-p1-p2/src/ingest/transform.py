@@ -1,4 +1,4 @@
-"""Transfomation ETL step"""
+"""Transformation ETL step"""
 
 import pandas as pd
 import pandera.pandas as pa
@@ -16,12 +16,14 @@ logger = logging.getLogger(__name__)
 def transform(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a transformed and validated dataset"""
     logger.info("Starting dataset transformation...")
+    df = df.copy()
 
     try:
-        transformed_df = _transform(df)
+        df = _transform(df)
+        df = df.reset_index(drop=True)
         logger.info("Finished dataset transformation")
         logger.info("Successfully validated the dataset")
-        return transformed_df
+        return df
     except Exception:
         logger.error("Could not transform the dataset")
         raise

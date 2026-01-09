@@ -3,6 +3,7 @@
 import pandas as pd
 
 from transform.code_mappings import get_mappings
+from transform.rules import quality_check
 
 import logging
 
@@ -16,7 +17,7 @@ import logging
 # These already have a clear, all lower-case with underscore naming convention.
 # So there is no need for me to do anything.
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 def _rename_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -145,6 +146,21 @@ def _normalize_values(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _apply_quality_check(df: pd.DataFrame) -> pd.DataFrame:
+    """Returns a valid dataset
+
+    Applies validation rules to the dataset.
+    Make decision whether to drop, fix or quarantine
+    values failing the validation.
+    """
+
+    logger.info("- Start dataset validation...")
+    df = df.copy()
+    df = quality_check(df)
+    logger.info("- End dataset validation")
+    return df
+
+
 def clean(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a cleaned dataset by applying transformations and verification rules"""
     logger.info("Start cleaning dataset...")
@@ -152,7 +168,9 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df = _rename_columns(df)
     df = _normalize_values(df)
+    df = _apply_quality_check(df)
     df = _cast_values(df)
+    df = df.reset_index(drop=True)
 
     logger.info("Successfully cleaned dataset")
     return df
