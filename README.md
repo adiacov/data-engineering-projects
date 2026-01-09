@@ -216,8 +216,10 @@ pip install -e .
 
 ## Run
 
-From the project root (example for `/data-engineering-projects/project-p1`):
+This is a python project, so make the usual staff.
+From the project root (example for `/data-engineering-projects/project-XYZ`):
 
-```bash
-python3 -m p1.main
+``` python
+# run a program (example for main-p1.py, but choose one if multiple at the same level)
+python3 src/main-p1.py
 ```

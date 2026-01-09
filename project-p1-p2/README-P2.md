@@ -215,3 +215,16 @@ You pass Project P2 only if **all** are true:
 * Incremental transformations
 * Multiple curated tables
 * Unit tests for rules
+
+# 10. How it works (high level)
+
+The following pipeline does the following:
+
+1. creates a pandas data frame from the `collisions_raw` DB table
+2. transform the dataset (clean, map categorical data from code to appropriate names, apply validation rules)
+3. loads dataset into database to `collisions_clean` table
+4. creates a second pandas data frame from the `collisions_clean` DB table
+5. transform the dataset (derive business data)
+6. loads dataset into database to `collisions_curated` table
+
+Note: at each important step the pipeline, and in case of any issue, the pipeline logs / raises the error

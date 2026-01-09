@@ -249,8 +249,8 @@ The following pipeline does the following:
 4. validates new metadata versus current metadata. If this is the first time the pipeline runs, the new metadata is considered valid (nothing to compare with)
 5. creates a pandas dataframe from the CSV file
 6. transform the dataset (clean, remove duplicates, validates schema)
-7. loads dataset into database
-8. loads metadata into database
+7. loads dataset into database to `collisions_raw` table
+8. loads metadata into database to `ingestion_metadata` table
 9. loads the cleaned dataset into a different CSV file (this is done to have a clean dataset for later analysis, debugging,...)
 
 Note: at each important step the pipeline, and in case of any issue, the pipeline logs / raises the error
