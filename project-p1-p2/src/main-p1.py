@@ -3,13 +3,13 @@
 from ingest.extract import read_csv_file
 from ingest.load import load_csv_file, load_data
 from ingest.transform import transform
-from ingest.db import create_db_engine
 from ingest.metadata import (
     create_ingestion_metadata,
     get_ingested_metadata,
     load_metadata,
     validate_metadata,
 )
+from common.db import create_db_engine
 
 import logging
 from pathlib import Path
