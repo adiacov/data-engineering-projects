@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 def _curate_dataset(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a new dataset with derived data"""
+    df_in = df.copy()
 
     # Derive is weekend day
     weekend_days = ["Sunday", "Saturday"]
@@ -45,6 +46,12 @@ def _curate_dataset(df: pd.DataFrame) -> pd.DataFrame:
         )
         .astype("string")
     )
+
+    logger.info(
+        f"[METRIC] Derive dataset columns: IN shape {df_in.shape} - OUT shape {df.shape}"
+    )
+    new_columns = list(set(df.columns).difference(df_in.columns))
+    logger.info(f"[METRIC] Created new dataset columns: {new_columns}")
 
     return df
 
