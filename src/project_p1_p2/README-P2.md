@@ -1,8 +1,3 @@
-Below is the **complete `README.md` for Project 2**.
-This project **builds directly on P1**. You are expected to reuse your ingestion output and extend it, not start from scratch.
-
----
-
 # **Project P2 — Batch Transformations & Data Quality**
 
 ## 1. Business Problem & Real-World Context

@@ -2,8 +2,8 @@
 
 import pandas as pd
 
-from transform.code_mappings import get_mappings
-from transform.rules import quality_check
+from project_p1_p2.transform.code_mappings import get_mappings
+from project_p1_p2.transform.rules import quality_check
 
 import logging
 

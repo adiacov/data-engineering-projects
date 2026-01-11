@@ -50,10 +50,11 @@ Each project is designed to be **self-contained**, **locally runnable**, and bas
 ```yaml
 data-engineering-projects/
 ├── README.md
-├── project-01-...
-├── project-02-...
-├── project-03-...
-└── ...
+├── src
+   ├── project-01-...
+   ├── project-02-...
+   ├── project-03-...
+   └── ...
 ```
 
 Each project directory contains:
@@ -217,9 +218,9 @@ pip install -e .
 ## Run
 
 This is a python project, so make the usual staff.
-From the project root (example for `/data-engineering-projects/project-XYZ`):
+From the project root (example for `/data-engineering-projects`):
 
 ``` python
-# run a program (example for main-p1.py, but choose one if multiple at the same level)
-python3 src/main-p1.py
+# run a program (example for main_p1.py, but choose one if multiple at the same level)
+python3 ./src/main_p1.py
 ```
