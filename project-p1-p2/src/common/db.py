@@ -10,6 +10,7 @@ from sqlalchemy import (
     String,
     Float,
     DateTime,
+    Boolean,
 )
 
 from pathlib import Path
@@ -123,6 +124,63 @@ def _create_collisions_clean_table(metadata: MetaData) -> Table:
     return table
 
 
+def _create_collisions_curated_table(metadata: MetaData) -> Table:
+    """Returns a new table: collisions_curated"""
+
+    table = Table(
+        "collisions_curated",
+        metadata,
+        Column("collision_id", String),
+        Column("collision_year", Integer),
+        Column("collision_ref_no", String),
+        Column("location_easting_osgr", Float, nullable=True),
+        Column("location_northing_osgr", Float, nullable=True),
+        Column("longitude", Float, nullable=True),
+        Column("latitude", Float, nullable=True),
+        Column("police_force", String),
+        Column("collision_severity", String),
+        Column("number_of_vehicles", Integer),
+        Column("number_of_casualties", Integer),
+        Column("day_of_week", String),
+        Column("local_authority_district", String),
+        Column("local_authority_ons_district", String),
+        Column("local_authority_highway", String),
+        Column("local_authority_highway_current", String),
+        Column("first_road_class", String),
+        Column("first_road_number", String),
+        Column("road_type", String),
+        Column("speed_limit", String),
+        Column("junction_detail_historic", String),
+        Column("junction_detail", String),
+        Column("junction_control", String),
+        Column("second_road_class", String),
+        Column("second_road_number", String),
+        Column("pedestrian_crossing_human_control_historic", String),
+        Column("pedestrian_crossing_physical_facilities_historic", String),
+        Column("pedestrian_crossing", String),
+        Column("light_conditions", String),
+        Column("weather_conditions", String),
+        Column("road_surface_conditions", String),
+        Column("special_conditions_at_site", String),
+        Column("carriageway_hazards_historic", String),
+        Column("carriageway_hazards", String),
+        Column("urban_or_rural_area", String),
+        Column("did_police_officer_attend_scene_of_accident", String),
+        Column("trunk_road_flag", String),
+        Column("lsoa_of_accident_location", String),
+        Column("enhanced_severity_collision", String),
+        Column("collision_injury_based", String),
+        Column("collision_adjusted_severity_serious", Float),
+        Column("collision_adjusted_severity_slight", Float),
+        Column("collision_datetime", DateTime),
+        Column("is_weekend_day", Boolean),
+        Column("collision_time", String),
+        Column("collision_year_month", String),
+        Column("severity_group", String),
+    )
+    return table
+
+
 def _create_ingestion_metadata_table(metadata: MetaData) -> Table:
     """Returns a new table: ingestion_metadata"""
     ingestion_metadata_table = Table(
@@ -151,6 +209,7 @@ def create_db_engine(echo: bool = False) -> Engine:
         _create_collisions_raw_table(metadata)
         _create_ingestion_metadata_table(metadata)
         _create_collisions_clean_table(metadata)
+        _create_collisions_curated_table(metadata)
         engine = create_engine(db_url, echo=echo)
         metadata.create_all(engine)
     except Exception:
