@@ -93,6 +93,20 @@ Explicitly state:
 * Why this grain is correct
 * What would violate it
 
+### **Milestone 1 — Result**
+
+**Fact Row Definition**:
+
+A collision fact row represents exactly one road collision event.
+
+**Grain Definition**:
+
+* collision grain (raw definition, see final definition below) -> a single collision, on a certain date and time, on a location and with a severity
+* collision grain definition: a single collision happened per day and / or time, in a certain location, with a certain severity
+* collision grain definition meaning: the fact table includes date/time/location/severity
+* collision grain to be valid should have the following dimensions tables: date, time, location, severity
+* collision grain should answer to questions like: how many collisions per date and / or time, weekday or weekend, what is the severity level, where it happens most
+
 ---
 
 ### **Milestone 2 — Identify Dimensions**
