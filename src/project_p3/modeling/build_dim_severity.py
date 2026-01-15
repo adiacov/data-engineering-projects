@@ -2,21 +2,29 @@
 
 import pandas as pd
 
+from project_p3.utils.utils import extract_severity_key
+
+
+def _extract_severity_dedup(df: pd.DataFrame) -> pd.DataFrame:
+    """Returns a dataset including the severity column deduplicated"""
+    return df.drop_duplicates("collision_severity")
+
 
 def build_dim_severity(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataset representing a severity dimension in star schema"""
 
-    severity = (
-        df["collision_severity"].drop_duplicates().to_frame(name="severity_description")
-    )
+    df = df.copy()
 
-    key_map = {"Slight": 1, "Serious": 2, "Fatal": 3}
+    # derive dimension columns
+    df["severity_key"] = extract_severity_key(df)
+    df["severity_description"] = df["collision_severity"]
     group_map = {"Slight": "low", "Serious": "medium", "Fatal": "high"}
+    df["severity_group"] = df["collision_severity"].map(group_map)
 
-    severity["severity_key"] = severity["severity_description"].map(key_map)
-    severity["severity_group"] = severity["severity_description"].map(group_map)
+    # create dimension dataset
+    df = _extract_severity_dedup(df)
 
-    return severity[
+    return df[
         [
             "severity_key",
             "severity_description",

@@ -1,4 +1,4 @@
-"""Main entry point to data modeling"""
+"""Main entry point to analytical data modeling"""
 
 # 0. define collision grain:
 # collision grain (raw definition, see final definition below) -> a single collision, on a certain date and time, on a location and with a severity
@@ -23,3 +23,31 @@
 # 4. create a dwh db schema
 # 5. insert tables into dwh
 # 6. run your queries -> log to terminal: Q/A manner
+
+import logging
+
+from logging_config import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
+
+
+def main_p2():
+    """Pipeline orchestration script that:
+
+    - Reads dataset from collisions_raw table
+    - Creates dimension datasets
+    - Validates dimension datasets
+    - Loads dimension datasets into DB
+    - Reads dimension datasets from DB
+    - Creates fact dataset
+    - Validates fact dataset
+    - Loads fact dataset
+    - Creates fact dataset
+    - Loads fact dataset into DB
+    """
+    pass
+
+
+if __name__ == "__main__":
+    main_p2()

@@ -2,24 +2,30 @@
 
 import pandas as pd
 
+from project_p3.utils.utils import extract_location_key
+
+
+def _extract_location_dedup(df: pd.DataFrame) -> pd.DataFrame:
+    """Returns a dataset including the location columns deduplicated"""
+    cols = ["lon_bucket", "lat_bucket"]
+    return df.drop_duplicates(cols).sort_values(cols)
+
 
 def build_dim_location(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataset representing a location dimension in star schema"""
 
-    BUCKET_PRECISION = 2  # grid size 1 square kilometer
-    locations = (
-        df[["longitude", "latitude"]]
-        .assign(
-            lon_bucket=lambda x: x["longitude"].round(BUCKET_PRECISION),
-            lat_bucket=lambda x: x["latitude"].round(BUCKET_PRECISION),
-        )
-        .drop_duplicates(["lon_bucket", "lat_bucket"])
-        .sort_values(["lon_bucket", "lat_bucket"])
-        .reset_index(drop=True)
-    )
-    locations["location_key"] = locations.index + 1
+    df: pd.DataFrame = df.copy()
 
-    return locations[
+    # derive dimension columns
+    BUCKET_PRECISION = 2  # grid size 1 square kilometer
+    df["lon_bucket"] = df["longitude"].astype("float").round(BUCKET_PRECISION)
+    df["lat_bucket"] = df["latitude"].astype("float").round(BUCKET_PRECISION)
+    df["location_key"] = extract_location_key(df)
+
+    # create dimension dataset
+    df = _extract_location_dedup(df)
+
+    return df[
         [
             "location_key",
             "lon_bucket",
