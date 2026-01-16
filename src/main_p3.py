@@ -44,7 +44,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def main_p2():
+def main_p3():
     """Pipeline orchestration script that:
 
     - Reads dataset from collisions_raw table
@@ -141,4 +141,4 @@ def main_p2():
 
 
 if __name__ == "__main__":
-    main_p2()
+    main_p3()
