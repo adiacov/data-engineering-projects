@@ -212,9 +212,6 @@ No dbt yet — modeling logic is explicit.
 
 ---
 
-## 10. Optional Extensions (Locked Until Passing)
+## 10. Analytical queries
 
-* Slowly changing dimensions (Type 1)
-* Snowflake schema
-* Aggregate fact tables
-* BI tool connection
+Few analytical queries where created and ready to be run against database. Find those in the `project_p3/analytical-queries.sql` file.
