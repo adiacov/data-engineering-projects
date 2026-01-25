@@ -1,6 +1,6 @@
 """ETL pipeline - local file batch ingestion"""
 
-from logging_config import setup_logging
+from common.logging_config import setup_logging
 from project_p1_p2.ingest.extract import read_csv_file
 from project_p1_p2.ingest.load import load_csv_file, load_data
 from project_p1_p2.ingest.transform import transform

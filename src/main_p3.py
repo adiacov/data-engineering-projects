@@ -28,7 +28,7 @@
 import pandas as pd
 
 import logging
-from logging_config import setup_logging
+from common.logging_config import setup_logging
 
 from common.db import create_db_engine
 from project_p3.modeling import (

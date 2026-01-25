@@ -3,7 +3,7 @@
 import pandas as pd
 from sqlalchemy import Engine
 
-from logging_config import setup_logging
+from common.logging_config import setup_logging
 from common.db import create_db_engine
 from project_p1_p2.transform.clean import clean
 from project_p1_p2.transform.curated import curate
