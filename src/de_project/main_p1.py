@@ -1,16 +1,16 @@
 """ETL pipeline - local file batch ingestion"""
 
-from common.logging_config import setup_logging
-from project_p1_p2.ingest.extract import read_csv_file
-from project_p1_p2.ingest.load import load_csv_file, load_data
-from project_p1_p2.ingest.transform import transform
-from project_p1_p2.ingest.metadata import (
+from de_project.common.logging_config import setup_logging
+from de_project.project_p1_p2.ingest.extract import read_csv_file
+from de_project.project_p1_p2.ingest.load import load_csv_file, load_data
+from de_project.project_p1_p2.ingest.transform import transform
+from de_project.project_p1_p2.ingest.metadata import (
     create_ingestion_metadata,
     get_ingested_metadata,
     load_metadata,
     validate_metadata,
 )
-from common.db import create_db_engine
+from de_project.common.db import create_db_engine
 
 import logging
 from pathlib import Path
@@ -19,7 +19,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def main_p1() -> None:
+def main() -> None:
     """ETL pipeline
     - Read a local CSV file
     - Transform, Validate the data
@@ -27,7 +27,7 @@ def main_p1() -> None:
     - Load the data into a local SQLite DB
     """
 
-    BASE_PATH = Path(__file__).resolve().parent
+    BASE_PATH = Path(__file__).resolve().parents[2]
 
     RAW_DATA_FILE = "dft-road-casualty-statistics-collision-2023.csv"
     RAW_DATA_FILE_PATH = BASE_PATH / "data" / "raw" / RAW_DATA_FILE
@@ -70,4 +70,4 @@ def main_p1() -> None:
 
 
 if __name__ == "__main__":
-    main_p1()
+    main()

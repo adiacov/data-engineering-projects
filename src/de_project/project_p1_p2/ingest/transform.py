@@ -3,7 +3,7 @@
 import pandas as pd
 import pandera.pandas as pa
 
-from project_p1_p2.ingest.schema import CollisionsRawSchema
+from de_project.project_p1_p2.ingest.schema import CollisionsRawSchema
 import logging
 
 logger = logging.getLogger(__name__)

@@ -236,7 +236,7 @@ _collision_injury_based_map = {
 
 # File based mappings
 
-BASE_PATH_DATA_CODES = Path(__file__).resolve().parents[2] / "data" / "codes"
+BASE_PATH_DATA_CODES = Path(__file__).resolve().parents[4] / "data" / "codes"
 UK_LA_CODES_PATH = BASE_PATH_DATA_CODES / "uk-la-codes.csv"
 UK_LSOA_CODES_PATH = BASE_PATH_DATA_CODES / "uk-lsoa-codes.csv"
 UK_POLICE_FORCE_CODES_PATH = BASE_PATH_DATA_CODES / "uk-police-force-codes.csv"

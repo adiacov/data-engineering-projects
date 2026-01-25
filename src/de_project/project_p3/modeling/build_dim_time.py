@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from project_p3.utils.utils import extract_time_key
+from de_project.project_p3.utils.utils import extract_time_key
 
 
 def _extract_time_dedup(df: pd.DataFrame) -> pd.DataFrame:

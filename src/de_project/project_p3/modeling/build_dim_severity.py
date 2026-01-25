@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from project_p3.utils.utils import extract_severity_key
+from de_project.project_p3.utils.utils import extract_severity_key
 
 
 def _extract_severity_dedup(df: pd.DataFrame) -> pd.DataFrame:

@@ -1,5 +1,5 @@
 [project]
-name = "data-engineering-projects"
+name = "de-project"
 version = "0.1.0"
 description = "A series of hands-on project to learn Data Engineering concepts and tools"
 readme = "README.md"
@@ -9,3 +9,13 @@ dependencies = [
     "pandera>=0.27.1",
     "sqlalchemy>=2.0.45",
 ]
+
+[project.scripts]
+p1 = "de_project.main_p1:main"
+p2 = "de_project.main_p2:main"
+p3 = "de_project.main_p3:main"
+
+
+[build-system]
+requires = ["uv_build>=0.9.26,<0.10.0"]
+build-backend = "uv_build"

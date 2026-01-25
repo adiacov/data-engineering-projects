@@ -3,10 +3,10 @@
 import pandas as pd
 from sqlalchemy import Engine
 
-from common.logging_config import setup_logging
-from common.db import create_db_engine
-from project_p1_p2.transform.clean import clean
-from project_p1_p2.transform.curated import curate
+from de_project.common.logging_config import setup_logging
+from de_project.common.db import create_db_engine
+from de_project.project_p1_p2.transform.clean import clean
+from de_project.project_p1_p2.transform.curated import curate
 
 import logging
 
@@ -77,7 +77,7 @@ def _curate_dataset(engine: Engine) -> None:
     logger.info("Successfully executed ETL pipeline curated phase")
 
 
-def main_p2():
+def main():
     """Pipeline orchestration script that:
 
     - Reads dataset from collisions_raw table
@@ -94,4 +94,4 @@ def main_p2():
 
 
 if __name__ == "__main__":
-    main_p2()
+    main()

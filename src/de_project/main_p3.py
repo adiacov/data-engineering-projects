@@ -28,23 +28,23 @@
 import pandas as pd
 
 import logging
-from common.logging_config import setup_logging
+from de_project.common.logging_config import setup_logging
 
-from common.db import create_db_engine
-from project_p3.modeling import (
+from de_project.common.db import create_db_engine
+from de_project.project_p3.modeling import (
     build_dim_date,
     build_dim_time,
     build_dim_severity,
     build_dim_location,
     build_fact_collisions,
 )
-from project_p3.utils import utils
+from de_project.project_p3.utils import utils
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def main_p3():
+def main():
     """Pipeline orchestration script that:
 
     - Reads dataset from collisions_raw table
@@ -141,4 +141,4 @@ def main_p3():
 
 
 if __name__ == "__main__":
-    main_p3()
+    main()

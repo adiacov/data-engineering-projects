@@ -9,6 +9,7 @@
 - [Intended Outcome](#intended-outcome)
 - [Full Project Roadmap (List)](#full-project-roadmap-list)
 - [Roadmap (ASCII Graph)](#roadmap-ascii-graph)
+- [Requirements](#requirements)
 - [Deploy](#deploy)
 - [Run](#run)
 
@@ -41,7 +42,7 @@ Each project is designed to be **self-contained**, **locally runnable**, and bas
 
 - OS: Linux
 - Language: Python
-- Tools: Open-source, Free (e.g. Apache Airflow, Apache Spark, dbt)
+- Tools: Open-source, Free (e.g., Apache Airflow, Apache Spark, dbt, uv)
 
 ---
 
@@ -191,6 +192,22 @@ I will **keep this roadmap as the fixed reference** for all future steps.
 
 ---
 
+## Requirements
+
+- **Python ≥ 3.13**
+- **uv tool** (to install, see instructions below)
+- Linux OS (adjust paths if using Windows/macOS)
+
+To install `uv`:
+
+```bash
+# For Linux/macOS
+python3 -m pip install --upgrade uv
+# Or check official instructions: https://uv.dev
+```
+
+---
+
 ## Deploy
 
 Note: This are Linux instructions. Adjust to your OS.
@@ -206,11 +223,10 @@ cd <project-directory>
 python3 -m venv .venv
 source .venv/bin/activate
 
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Install the project in editable mode
-pip install -e .
+# 3. At this point if you have 'uv' installed, you're all setup. Ypu can proceed to Run commands (see bellow).
+#    (Optional) You can update the project's environment to synchronize python environment
+uv lock
+uv sync
 ```
 
 ---
@@ -222,5 +238,25 @@ From the project root (example for `/data-engineering-projects`):
 
 ``` python
 # run a program (example for main_p1.py, but choose one if multiple at the same level)
-python3 ./src/main_p1.py
+
+# Run project 1
+uv run p1
+
+# Run project 2
+uv run p2
+
+# Run project xwz...
+# uv run xwz (see pyproject.toml / [project.scripts])
+```
+
+The list of available commands you can find in the `pyproject.toml` under `[project.scripts]`.
+
+You can also run scripts directly via Python if needed:
+
+``` python
+python3 -m src.de_project.main_p1
+
+# Or
+python3 ./src/de_project/main_p1.py
+
 ```

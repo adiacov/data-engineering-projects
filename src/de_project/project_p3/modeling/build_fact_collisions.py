@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from project_p3.utils.utils import (
+from de_project.project_p3.utils.utils import (
     extract_date_key,
     extract_time_key,
     extract_severity_key,

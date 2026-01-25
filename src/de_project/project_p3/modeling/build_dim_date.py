@@ -4,7 +4,7 @@ import pandas as pd
 
 import logging
 
-from project_p3.utils.utils import extract_date_key
+from de_project.project_p3.utils.utils import extract_date_key
 
 logger = logging.getLogger(__name__)
 
