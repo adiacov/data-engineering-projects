@@ -14,7 +14,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def _clean_dataset(engine: Engine) -> None:
+def clean_dataset(engine: Engine) -> None:
     """ETL clean pipeline.
 
     Reads dataset from `collisions_raw` table.
@@ -45,7 +45,7 @@ def _clean_dataset(engine: Engine) -> None:
     logger.info("Successfully executed ETL pipeline clean phase")
 
 
-def _curate_dataset(engine: Engine) -> None:
+def curate_dataset(engine: Engine) -> None:
     """ETL curated pipeline.
 
     Reads dataset from `collisions_clean` table.
@@ -89,8 +89,8 @@ def main():
     """
 
     engine = create_db_engine(echo=False)  # True = display sqlalchemy logs
-    _clean_dataset(engine)
-    _curate_dataset(engine)
+    clean_dataset(engine)
+    curate_dataset(engine)
 
 
 if __name__ == "__main__":

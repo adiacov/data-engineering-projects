@@ -230,3 +230,4 @@ __marimo__/
 # Custom
 /dev
 develop.ipynb
+.airflow/

@@ -5,6 +5,7 @@ description = "A series of hands-on project to learn Data Engineering concepts a
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "apache-airflow==3.1.6",
     "pandas>=2.3.3",
     "pandera>=0.27.1",
     "sqlalchemy>=2.0.45",
@@ -14,6 +15,7 @@ dependencies = [
 p1 = "de_project.main_p1:main"
 p2 = "de_project.main_p2:main"
 p3 = "de_project.main_p3:main"
+p4 = "de_project.main_p4:main"
 
 
 [build-system]
