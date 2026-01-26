@@ -19,6 +19,7 @@ from airflow.sdk import dag, task
 
 @dag(
     dag_id="dag_collisions_pipeline",
+    dag_display_name="dag_collisions_pipeline",
 )
 def main():
     """### DAG UK road traffic collisions ETL
@@ -31,7 +32,7 @@ def main():
     """
 
     @task()
-    def create_db_engine():
+    def db_engine():
         """### Creates database engine.
 
         Returns:
@@ -79,7 +80,7 @@ def main():
         """
         main_p3.main()
 
-    engine = create_db_engine()
+    engine = db_engine()
     (
         ingest_raw()
         >> transform_clean(engine)
