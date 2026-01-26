@@ -32,15 +32,6 @@ def main():
     """
 
     @task()
-    def db_engine():
-        """### Creates database engine.
-
-        Returns:
-            SqlAlchemy Engine
-        """
-        return create_db_engine()
-
-    @task()
     def ingest_raw():
         """### ETL extract step.
 
@@ -49,7 +40,7 @@ def main():
         main_p1.main()
 
     @task()
-    def transform_clean(engine):
+    def transform_clean():
         """### ETL transform, load step.
 
         Reads an existing raw dataset from database,
@@ -57,10 +48,11 @@ def main():
         Do data validation for resulting dataset.
         Loads it as a clean dataset into DB.
         """
+        engine = create_db_engine()
         main_p2.clean_dataset(engine)
 
     @task()
-    def transform_curated(engine):
+    def transform_curated():
         """### ETL transform, load step.
 
         Reads an existing clean dataset from database.
@@ -68,6 +60,7 @@ def main():
         Validates the resulting dataset.
         Loads it as a curated dataset into DB.
         """
+        engine = create_db_engine()
         main_p2.curate_dataset(engine)
 
     @task()
@@ -80,13 +73,7 @@ def main():
         """
         main_p3.main()
 
-    engine = db_engine()
-    (
-        ingest_raw()
-        >> transform_clean(engine)
-        >> transform_curated(engine)
-        >> model_analytics()
-    )
+    (ingest_raw() >> transform_clean() >> transform_curated() >> model_analytics())
 
 
 # DAG object for Airflow to load it.

@@ -11,12 +11,16 @@ from de_project.project_p1_p2.ingest.metadata import (
     validate_metadata,
 )
 from de_project.common.db import create_db_engine
+from de_project.common.config import get_data_path, load_env
+
 
 import logging
 from pathlib import Path
 
 setup_logging()
 logger = logging.getLogger(__name__)
+
+load_env()
 
 
 def main() -> None:
@@ -27,13 +31,13 @@ def main() -> None:
     - Load the data into a local SQLite DB
     """
 
-    BASE_PATH = Path(__file__).resolve().parents[2]
+    DATA_PATH = get_data_path()
 
     RAW_DATA_FILE = "dft-road-casualty-statistics-collision-2023.csv"
-    RAW_DATA_FILE_PATH = BASE_PATH / "data" / "raw" / RAW_DATA_FILE
+    RAW_DATA_FILE_PATH = DATA_PATH / "raw" / RAW_DATA_FILE
 
     CLEAN_DATA_FILE = "dft-road-casualty-statistics-collision-2023-clean.csv"
-    CLEAN_DATA_FILE_PATH = BASE_PATH / "data" / "processed" / CLEAN_DATA_FILE
+    CLEAN_DATA_FILE_PATH = DATA_PATH / "processed" / CLEAN_DATA_FILE
 
     logger.info("ETL pipeline started")
 

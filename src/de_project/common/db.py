@@ -193,15 +193,31 @@ def _create_ingestion_metadata_table(metadata: MetaData) -> Table:
     return ingestion_metadata_table
 
 
+from de_project.common.config import is_runtime_local, get_data_path
+
+
+def _create_db_url() -> str:
+    # Declaring here for simplicity. Usually these are kept in config files
+
+    if is_runtime_local():
+        db_folder = Path.home() / ".cache" / "sqlite"
+    else:
+        db_folder = get_data_path() / "sqlite"
+
+    db_folder.mkdir(parents=True, exist_ok=True)
+    db_path = db_folder / "data_engineering.db"
+    db_url = f"sqlite+pysqlite:///{db_path}"
+
+    logger.info(f"Using SQLite database at: {db_url}")
+    return db_url
+
+
 def create_db_engine(echo: bool = False) -> Engine:
     """Creates a new database engine instance.
 
     :param echo=False: if True, the Engine will log all statements
     """
-    # Declaring here for simplicity. Usually these are kept in config files
-    db_name = "data_engineering.db"
-    db_path = f"{Path.home()}/.cache/sqlite/{db_name}"
-    db_url = f"sqlite+pysqlite:///{db_path}"
+    db_url = _create_db_url()
 
     try:
         logging.info("Creating SQL engine")
