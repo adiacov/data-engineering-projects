@@ -208,6 +208,17 @@ python3 -m pip install --upgrade uv
 
 ---
 
+## Package Python project
+
+```bash
+make package
+
+# OR using `uv` directly
+uv build --clear --wheel
+```
+
+---
+
 ## Deploy
 
 Note: This are Linux instructions. Adjust to your OS.
@@ -227,6 +238,16 @@ source .venv/bin/activate
 #    (Optional) You can update the project's environment to synchronize python environment
 uv lock
 uv sync
+```
+
+## Deploy (Airflow Docker - starting from project_4)
+
+```bash
+# 1. Build the Airflow Docker image including project
+make docker-build
+
+# OR using docker compose directly
+docker compose build
 ```
 
 ---
@@ -258,5 +279,29 @@ python3 -m src.de_project.main_p1
 
 # Or
 python3 ./src/de_project/main_p1.py
+
+```
+
+## Run (Airflow DAGs - starting from project_4)
+
+```bash
+# 1. Start Airflow containers in detached mode
+make docker-up
+#OR
+docker compose up -d
+
+
+# 2. Access the Airflow UI at:
+#    http://localhost:8080
+#    User: airflow
+#    Password: airflow
+
+# 3. Trigger DAGs manually or schedule them via the UI
+# e.g. DAG dag_collisions_pipeline. See `dag_id` or `dag_display_name` in the DAG declaration. 
+
+# 4. Stop and remove Airflow containers when done
+make docker-down
+#OR
+docker compose down
 
 ```
