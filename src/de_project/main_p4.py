@@ -15,11 +15,21 @@ from de_project import main_p1, main_p2, main_p3
 from de_project.common.db import create_db_engine
 
 from airflow.sdk import dag, task
+from datetime import timedelta
 
 
 @dag(
     dag_id="dag_collisions_pipeline",
     dag_display_name="dag_collisions_pipeline",
+    catchup=False,
+    max_consecutive_failed_dag_runs=2,
+    default_args={
+        # Tasks configuration
+        "retries": 3,
+        "retry_delay": timedelta(minutes=1),
+        "max_retry_delay": timedelta(hours=1),
+        "retry_exponential_backoff": True,
+    },
 )
 def main():
     """### DAG UK road traffic collisions ETL
