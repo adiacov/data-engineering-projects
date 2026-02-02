@@ -10,6 +10,7 @@ dependencies = [
     "pandera>=0.27.1",
     "python-dotenv>=1.2.1",
     "sqlalchemy>=2.0.45",
+    "pyspark>=4.1.0",
 ]
 
 [project.scripts]
@@ -17,6 +18,7 @@ p1 = "de_project.main_p1:main"
 p2 = "de_project.main_p2:main"
 p3 = "de_project.main_p3:main"
 p4 = "de_project.main_p4:main"
+p5 = "de_project.main_p5:main"
 
 
 [build-system]
