@@ -8,11 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 def load_env():
-    load_dotenv(".project.env")
-    logger.info(f"Current APP runtime: {os.environ.get("APP_RUNTIME")}")
+    logger.info(f"Loading project environment variables")
+    load_dotenv()
 
 
 def is_runtime_local() -> bool:
+    logger.info(f"Current APP runtime ENV: {os.environ.get("APP_RUNTIME")}")
     return os.environ.get("APP_RUNTIME") == "local"
 
 
@@ -31,4 +32,6 @@ def get_data_path() -> Path:
     if is_runtime_local():
         return find_project_root() / "data"
     else:
-        return Path(os.environ["PROJECT_DATA_DIR"])
+        data_path = os.environ["PROJECT_DATA_DIR"]
+        logger.info(f"Project data directory ENV: {data_path}")
+        return Path(data_path)

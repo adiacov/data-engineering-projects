@@ -15,5 +15,3 @@ RUN uv pip install /tmp/*.whl && rm /tmp/*.whl
 
 # Switch back to airflow user
 USER airflow
-
-ENV PROJECT_DATA_DIR=/opt/airflow/data

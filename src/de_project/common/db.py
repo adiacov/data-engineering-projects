@@ -16,7 +16,7 @@ from sqlalchemy import (
 from pathlib import Path
 import logging
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 def _create_collisions_raw_table(metadata: MetaData) -> Table:

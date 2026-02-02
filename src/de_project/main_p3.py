@@ -39,7 +39,9 @@ from de_project.project_p3.modeling import (
     build_fact_collisions,
 )
 from de_project.project_p3.utils import utils
+from de_project.common.config import load_env
 
+load_env()
 setup_logging()
 logger = logging.getLogger(__name__)
 
