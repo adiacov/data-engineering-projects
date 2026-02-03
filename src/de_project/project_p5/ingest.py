@@ -9,13 +9,20 @@ from de_project.common.config import load_env
 from de_project.project_p5.schema import get_schema_for
 
 load_env()
-setup_logging()
+# setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def _log_df_summary(name: str, df: DataFrame) -> None:
-    logger.info(f"Ingested dataset {name}")
-    logger.info(f"- Dataset shape: rows - {df.count()}, cols: {len(df.columns)}")
+def _log_df_metrics(df: DataFrame, name: str) -> None:
+    logger.info(
+        "[METRIC] Extracted [%s] dataset shape : rows %s, cols %s",
+        name,
+        df.count(),
+        len(df.columns),
+    )
+    logger.info(
+        f"[METRIC] [%s] dataset partitions: %s", name, df.rdd.getNumPartitions()
+    )
 
 
 def ingest(spark: SparkSession, data_dir: Path) -> DataFrame:
@@ -27,7 +34,6 @@ def ingest(spark: SparkSession, data_dir: Path) -> DataFrame:
         header=True,
         schema=get_schema_for(name),
     )
-    _log_df_summary(name, df)
-
+    _log_df_metrics(df, name)
     logger.info("Successfully ingested datasets [%s]", name)
     return df

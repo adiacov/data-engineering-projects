@@ -3,6 +3,7 @@ import logging
 from de_project.common.config import get_data_path
 from de_project.common.logging_config import setup_logging
 from de_project.project_p5.ingest import ingest
+from de_project.project_p5.transform.transform import transform_clean, transform_curate
 
 from de_project.project_p5.spark import get_spark
 
@@ -18,17 +19,45 @@ def main():
     spark = get_spark()
 
     # re-assign df variable to make some room
-    path = DATA_PATH / "collision"
+    ### COLLISION INGEST
+    dataset_name = "collision"
+    path = DATA_PATH / dataset_name
     df = ingest(spark, path)
+    df.repartition(8)
+    logger.info(
+        "[METRIC] [%s] dataset partitions (after repartition): %s",
+        dataset_name,
+        df.rdd.getNumPartitions(),
+    )
 
-    path = DATA_PATH / "vehicle"
-    df = ingest(spark, path)
+    ### COLLISION TRANSFORM
+    df = transform_clean(df, dataset_name)
+    df = transform_curate(df, dataset_name)
 
-    path = DATA_PATH / "casualty"
-    df = ingest(spark, path)
+    # ### VEHICLE INGEST
+    # dataset_name = "vehicle"
+    # path = DATA_PATH / dataset_name
+    # df = ingest(spark, path)
+    # df.repartition(8)
+    # logger.info(
+    #     "[METRIC] [%s] dataset partitions (after repartition): %s",
+    #     dataset_name,
+    #     df.rdd.getNumPartitions(),
+    # )
+
+    # ### CASUALTY INGEST
+    # dataset_name = "casualty"
+    # path = DATA_PATH / dataset_name
+    # df = ingest(spark, path)
+    # df.repartition(8)
+    # logger.info(
+    #     "[METRIC] [%s] dataset partitions (after repartition): %s",
+    #     dataset_name,
+    #     df.rdd.getNumPartitions(),
+    # )
 
     spark.stop()
-    logger.info("Successfully finished ETP pipeline (SPARK)")
+    logger.info("Successfully finished ETL pipeline (SPARK)")
 
 
 if __name__ == "__main__":
