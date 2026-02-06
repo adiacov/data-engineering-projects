@@ -1,11 +1,12 @@
 import logging
 
+from de_project.project_p5.spark import get_spark
 from de_project.common.config import get_data_path
 from de_project.common.logging_config import setup_logging
 from de_project.project_p5.ingest import ingest
 from de_project.project_p5.transform.transform import transform_clean, transform_curate
+from de_project.project_p5.join import join_datasets
 
-from de_project.project_p5.spark import get_spark
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -62,6 +63,16 @@ def main():
     ### CASUALTY TRANSFORM
     df_casualty_clean = transform_clean(df_casualty, dataset_name)
     df_casualty_curated = transform_curate(df_casualty_clean, dataset_name)
+
+    ### JOIN
+    df_final = join_datasets(
+        df_collision,
+        df_vehicle,
+        df_casualty,
+    )
+    
+    df_final.show()
+    
 
     spark.stop()
     logger.info("Successfully finished ETL pipeline (SPARK)")
