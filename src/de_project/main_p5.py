@@ -6,6 +6,7 @@ from de_project.common.logging_config import setup_logging
 from de_project.project_p5.spark_ingest import ingest
 from de_project.project_p5.transform.transform import transform_clean, transform_curate
 from de_project.project_p5.spark_join import join_datasets
+from de_project.project_p5.spark_write import write_to_parquet
 
 
 setup_logging()
@@ -15,13 +16,15 @@ logger = logging.getLogger(__name__)
 def main():
     logger.info("Starting ETL pipeline (SPARK)")
 
-    DATA_PATH = get_data_path() / "raw"
+    DATA_PATH = get_data_path()
+    DATA_PATH_RAW = DATA_PATH / "raw"
+    DATA_PATH_OUTPUT = DATA_PATH / "output"
 
     spark = get_spark()
 
     ### COLLISION INGEST
     dataset_name = "collision"
-    path = DATA_PATH / dataset_name
+    path = DATA_PATH_RAW / dataset_name
     df_collision = ingest(spark, path)
     df_collision.repartition(8)
     logger.info(
@@ -36,7 +39,7 @@ def main():
 
     # ### VEHICLE INGEST
     dataset_name = "vehicle"
-    path = DATA_PATH / dataset_name
+    path = DATA_PATH_RAW / dataset_name
     df_vehicle = ingest(spark, path)
     df_vehicle.repartition(8)
     logger.info(
@@ -51,7 +54,7 @@ def main():
 
     # ### CASUALTY INGEST
     dataset_name = "casualty"
-    path = DATA_PATH / dataset_name
+    path = DATA_PATH_RAW / dataset_name
     df_casualty = ingest(spark, path)
     df_casualty.repartition(8)
     logger.info(
@@ -66,18 +69,16 @@ def main():
 
     ### JOIN
     df_final = join_datasets(
-        df_collision,
-        df_vehicle,
-        df_casualty,
+        df_collision_curated,
+        df_vehicle_curated,
+        df_casualty_curated,
     )
-    
+
     ### WRITE, PARTITION BY YEAR 2022 to 2023 inclusive
-    
+    write_to_parquet(df_final, DATA_PATH_OUTPUT)
 
     spark.stop()
     logger.info("Successfully finished ETL pipeline (SPARK)")
-
-    # TODO: review existing METRIC. Refactor - log all important metrics
 
 
 if __name__ == "__main__":
