@@ -4,12 +4,10 @@ from pyspark.sql import DataFrame
 from pathlib import Path
 import logging
 
-from de_project.common.logging_config import setup_logging
 from de_project.common.config import load_env
-from de_project.project_p5.schema import get_schema_for
+from de_project.project_p5.spark_schema import get_schema_for
 
 load_env()
-# setup_logging()
 logger = logging.getLogger(__name__)
 
 
