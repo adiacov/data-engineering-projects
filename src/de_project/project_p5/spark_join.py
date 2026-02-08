@@ -21,14 +21,19 @@ def join_datasets(
         "vehicle_reference",
     )
 
-    df = df_collision.join(
-        other=df_vehicle_cp,
-        on="collision_index",
-        how="inner",
-    ).join(
-        other=df_casualty_cp,
-        on="collision_index",
-        how="inner",
+    df = (
+        df_collision.alias("a")
+        .join(
+            other=df_vehicle_cp.alias("b"),
+            on=fc.col("a.collision_id") == fc.col("b.collision_index"),
+            how="inner",
+        )
+        .join(
+            other=df_casualty_cp.alias("c"),
+            on=fc.col("a.collision_id") == fc.col("c.collision_index"),
+            how="inner",
+        )
+        .drop("collision_index")
     )
 
     logger.info("Joined datasets.")

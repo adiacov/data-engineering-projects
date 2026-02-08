@@ -1,3 +1,5 @@
+from pyspark.sql import DataFrame
+
 import logging
 
 from de_project.project_p5.spark_session import get_spark
@@ -7,24 +9,23 @@ from de_project.project_p5.spark_ingest import ingest
 from de_project.project_p5.transform.transform import transform_clean, transform_curate
 from de_project.project_p5.spark_join import join_datasets
 from de_project.project_p5.spark_write import write_to_parquet
+from de_project.project_p5.spark_modelling import (
+    build_collisions_fact,
+    build_date_dimension,
+    build_location_dimension,
+    build_severity_dim,
+    build_time_dim,
+)
 
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def main():
-    logger.info("Starting ETL pipeline (SPARK)")
-
-    DATA_PATH = get_data_path()
-    DATA_PATH_RAW = DATA_PATH / "raw"
-    DATA_PATH_OUTPUT = DATA_PATH / "output"
-
-    spark = get_spark()
-
+def _run_collision_etl(spark, source_data_path) -> DataFrame:
     ### COLLISION INGEST
     dataset_name = "collision"
-    path = DATA_PATH_RAW / dataset_name
+    path = source_data_path / dataset_name
     df_collision = ingest(spark, path)
     df_collision.repartition(8)
     logger.info(
@@ -37,9 +38,12 @@ def main():
     df_collision_clean = transform_clean(df_collision, dataset_name)
     df_collision_curated = transform_curate(df_collision_clean, dataset_name)
 
-    # ### VEHICLE INGEST
+    return df_collision_curated
+
+
+def _run_vehicle_etl(spark, source_data_path) -> DataFrame:
     dataset_name = "vehicle"
-    path = DATA_PATH_RAW / dataset_name
+    path = source_data_path / dataset_name
     df_vehicle = ingest(spark, path)
     df_vehicle.repartition(8)
     logger.info(
@@ -52,9 +56,13 @@ def main():
     df_vehicle_clean = transform_clean(df_vehicle, dataset_name)
     df_vehicle_curated = transform_curate(df_vehicle_clean, dataset_name)
 
-    # ### CASUALTY INGEST
+    return df_vehicle_curated
+
+
+def _run_casualty_etl(spark, source_data_path) -> DataFrame:
+    ### CASUALTY INGEST
     dataset_name = "casualty"
-    path = DATA_PATH_RAW / dataset_name
+    path = source_data_path / dataset_name
     df_casualty = ingest(spark, path)
     df_casualty.repartition(8)
     logger.info(
@@ -67,11 +75,34 @@ def main():
     df_casualty_clean = transform_clean(df_casualty, dataset_name)
     df_casualty_curated = transform_curate(df_casualty_clean, dataset_name)
 
+    return df_casualty_curated
+
+
+def main():
+    logger.info("Starting ETL pipeline (SPARK)")
+
+    DATA_PATH = get_data_path()
+    DATA_PATH_RAW = DATA_PATH / "raw"
+    DATA_PATH_OUTPUT = DATA_PATH / "output"
+
+    spark = get_spark()
+
+    ### COLLISION DATASET
+    collision_df = _run_collision_etl(spark, DATA_PATH_RAW)
+    # facts and dimensions. Skip persist to database.
+    collision_fact = build_collisions_fact(collision_df)
+
+    ### VEHICLE DATASET
+    vehicle_df = _run_vehicle_etl(spark, DATA_PATH_RAW)
+
+    ### CASUALTY DATASET
+    casualty_df = _run_casualty_etl(spark, DATA_PATH_RAW)
+
     ### JOIN
     df_final = join_datasets(
-        df_collision_curated,
-        df_vehicle_curated,
-        df_casualty_curated,
+        collision_fact,
+        vehicle_df,
+        casualty_df,
     )
 
     ### WRITE, PARTITION BY YEAR 2022 to 2023 inclusive

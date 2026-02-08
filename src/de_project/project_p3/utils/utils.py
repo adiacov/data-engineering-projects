@@ -9,9 +9,9 @@ def extract_date_key(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataset including the date columns deduplicated and a surrogate key"""
 
     df = df.copy()
-    df["data_key"] = df["collision_datetime"].dt.strftime("%Y%m%d").astype("int")
+    df["date_key"] = df["collision_datetime"].dt.strftime("%Y%m%d").astype("int")
 
-    return df[["data_key"]]
+    return df[["date_key"]]
 
 
 def extract_time_key(df: pd.DataFrame) -> pd.DataFrame:

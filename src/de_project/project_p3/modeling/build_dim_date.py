@@ -17,7 +17,7 @@ def _extract_date_dedup(df: pd.DataFrame) -> pd.DataFrame:
 def build_dim_date(df: pd.DataFrame) -> pd.DataFrame:
     """Returns a dataset representing a date dimension in star schema"""
 
-    df = df.copy()
+    df: pd.DataFrame = df.copy()
 
     # derive dimension columns
     df["date_key"] = extract_date_key(df)
