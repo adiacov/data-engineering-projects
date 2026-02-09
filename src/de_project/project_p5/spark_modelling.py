@@ -153,6 +153,7 @@ def build_collisions_fact(dff: DataFrame) -> DataFrame:
         .withColumn("collision_count", fc.lit(1))
         .select(
             "collision_id",
+            "collision_year",
             "location_key",
             "date_key",
             "time_key",
