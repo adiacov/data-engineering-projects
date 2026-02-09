@@ -19,6 +19,8 @@ from de_project.project_p5.spark_modelling import (
     build_time_dim,
 )
 
+from de_project.project_p5.analytics import run_analytics
+
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -89,26 +91,27 @@ def main():
 
     spark: SparkSession = get_spark()
 
-    # ### COLLISION DATASET
-    # collision_df = _run_collision_etl(spark, DATA_PATH_RAW)
-    # # facts and dimensions. Skip persist to database.
-    # collision_fact = build_collisions_fact(collision_df)
+    ### COLLISION DATASET
+    collision_df = _run_collision_etl(spark, DATA_PATH_RAW)
+    # facts and dimensions. Skip persist to database.
+    collision_fact = build_collisions_fact(collision_df)
+    date_dim = build_date_dimension(collision_df)
 
-    # ### VEHICLE DATASET
-    # vehicle_df = _run_vehicle_etl(spark, DATA_PATH_RAW)
+    ### VEHICLE DATASET
+    vehicle_df = _run_vehicle_etl(spark, DATA_PATH_RAW)
 
-    # ### CASUALTY DATASET
-    # casualty_df = _run_casualty_etl(spark, DATA_PATH_RAW)
+    ### CASUALTY DATASET
+    casualty_df = _run_casualty_etl(spark, DATA_PATH_RAW)
 
-    # ### JOIN
-    # df_final = join_datasets(
-    #     collision_fact,
-    #     vehicle_df,
-    #     casualty_df,
-    # )
+    ### JOIN
+    df_final = join_datasets(
+        collision_fact,
+        vehicle_df,
+        casualty_df,
+    )
 
-    # ### WRITE, PARTITION BY YEAR 2022 to 2023 inclusive
-    # write_to_parquet(df_final, DATA_PATH_OUTPUT)
+    ### WRITE, PARTITION BY YEAR 2022 to 2023 inclusive
+    write_to_parquet(df_final, DATA_PATH_OUTPUT)
 
     ### READ PARTITIONED DATASET ONLY FOR A SPECIFIC YEAR
     df_2020 = spark.read.parquet(str(DATA_PATH_OUTPUT)).filter(
@@ -119,6 +122,13 @@ def main():
     logger.info("Spark plan for collision dataset: check filter")
     df_2020.explain()
     # PartitionFilters: [isnotnull(collision_year#54), (collision_year#54 = 2020)]
+
+    # ANALYTICS
+    run_analytics(
+        spark,
+        collision_fact,
+        date_dim,
+    )
 
     spark.stop()
     logger.info("Successfully finished ETL pipeline (SPARK)")
